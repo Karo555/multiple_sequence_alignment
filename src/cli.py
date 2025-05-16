@@ -1,14 +1,6 @@
 import argparse
-import sys
+from re import match
 from utils.functions import *
-import os
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch')))
-
-##module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch', 'src'))
-##if module_path not in sys.path:
-##    sys.path.append(module_path)
-
-from aligner.core import build_score_matrix
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -61,6 +53,7 @@ if __name__ == "__main__":
     args = parse_arguments()
     scoring = ScoringScheme(match=args.match, mismatch=args.mismatch, gap=args.gap)
     print("Scoring Scheme:", scoring)
+  
     if args.input:
         sequences = normalize_sequences(args.input)
     else:
@@ -78,3 +71,10 @@ if __name__ == "__main__":
     else:
         print("FASTA File Path:", args.file)
     print("Detected type:", args.type if args.type else "Auto-detect")
+    score_matrix = build_pairwise_score_matrix(sequences, scoring)
+    
+    distance_matrix = convert_scores_to_distances(score_matrix)
+    center_index = find_center_sequence(distance_matrix)
+
+    print(f"Center sequence index: {center_index}")
+    print(f"Center sequence: {sequences[center_index]}")

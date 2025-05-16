@@ -1,4 +1,4 @@
-import re
+from src.aligner.core import needleman_wunsch_alignment
 
 class ScoringScheme:
     def __init__(self, match=1, mismatch=-1, gap=-2):
@@ -89,3 +89,56 @@ def parse_fasta_file(filepath):
         raise ValueError("No sequences found in FASTA file.")
 
     return sequences
+
+def build_pairwise_score_matrix(sequences, scoring):
+    """
+    Compute pairwise Needleman-Wunsch alignment scores for all input sequences.
+    Returns a symmetric n x n score matrix.
+    """
+    n = len(sequences)
+    score_matrix = [[0] * n for _ in range(n)]
+
+    for i in range(n):
+        for j in range(i + 1, n):
+            _, _, score = needleman_wunsch_alignment(
+                sequences[i],
+                sequences[j],
+                scoring.match,
+                scoring.mismatch,
+                scoring.gap
+            )
+            score_matrix[i][j] = score
+            score_matrix[j][i] = score
+
+    return score_matrix
+
+def convert_scores_to_distances(score_matrix):
+    """
+    Converts a score matrix into a distance matrix using:
+    distance = max_score - score
+    """
+    n = len(score_matrix)
+    max_score = max(
+        score_matrix[i][j]
+        for i in range(n)
+        for j in range(n)
+        if i != j
+    )
+
+    distance_matrix = [[0] * n for _ in range(n)]
+    for i in range(n):
+        for j in range(n):
+            if i != j:
+                distance_matrix[i][j] = max_score - score_matrix[i][j]
+            else:
+                distance_matrix[i][j] = 0  # distance to self
+
+    return distance_matrix
+
+def find_center_sequence(distance_matrix):
+    """
+    Finds the index of the sequence with the smallest total distance to others.
+    """
+    total_distances = [sum(row) for row in distance_matrix]
+    center_index = total_distances.index(min(total_distances))
+    return center_index

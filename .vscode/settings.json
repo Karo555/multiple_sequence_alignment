@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./external/needleman-wunsch/src"
+    ]
+}
