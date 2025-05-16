@@ -170,7 +170,6 @@ def main():
     if args.output:
         write_report(args.output, report_text)
     else:
-        # Print report to console when no output file is specified
         print(report_text)
 
     if args.json_out:

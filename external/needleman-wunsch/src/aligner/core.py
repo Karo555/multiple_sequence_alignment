@@ -145,3 +145,30 @@ def trace_all_paths(
 
     recurse(n, m, [], [])
     return paths
+
+def needleman_wunsch_alignment(
+    seq1_str: str,
+    seq2_str: str,
+    match: int,
+    mismatch: int,
+    gap: int
+) -> Tuple[str, str, int]:
+    """
+    Perform Needleman–Wunsch alignment between two sequences and return
+    the aligned sequences along with the final alignment score.
+
+    :param seq1_str: First input sequence as a string
+    :param seq2_str: Second input sequence as a string
+    :param match: Match score
+    :param mismatch: Mismatch penalty
+    :param gap: Gap penalty
+    :return: (aligned_seq1, aligned_seq2, alignment_score)
+    """
+    seq1 = Sequence(seq1_str)
+    seq2 = Sequence(seq2_str)
+
+    matrix = build_score_matrix(seq1, seq2, match, mismatch, gap)
+    aligned1, aligned2 = traceback(seq1, seq2, matrix, match, mismatch, gap)
+    score = matrix[-1][-1]
+
+    return aligned1, aligned2, score
