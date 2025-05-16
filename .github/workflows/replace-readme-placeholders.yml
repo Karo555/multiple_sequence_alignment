@@ -1,0 +1,44 @@
+name: Replace README Placeholders
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write  
+
+jobs:
+  replace-placeholders:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Get repo name
+        id: get_repo_name
+        run: echo "REPO_NAME=$(basename $(git rev-parse --show-toplevel))" >> $GITHUB_ENV
+
+      - name: Get last commit message
+        id: last_commit
+        run: |
+          LAST_MSG=$(git log -1 --pretty=%B)
+          echo "LAST_COMMIT_MSG=$LAST_MSG" >> $GITHUB_ENV
+          echo "Last commit message: $LAST_MSG"
+
+      - name: Replace {REPO_NAME} in README.md
+        if: env.LAST_COMMIT_MSG == 'Initial commit'
+        run: sed -i "s/{REPO_NAME}/$REPO_NAME/g" README.md
+
+      - name: Commit changes
+        if: env.LAST_COMMIT_MSG == 'Initial commit'
+        run: |
+          git config --global user.name "GitHub Actions"
+          git config --global user.email "actions@github.com"
+          git add README.md
+          git commit -m "Auto-replace {REPO_NAME} with actual repo name"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
