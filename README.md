@@ -1,10 +1,11 @@
-# {REPO_NAME}
+# MSA - MULTIPLE SEQUENCE ALIGNMENT<br>
+(center star method)
 ## Pre-requirements
 Python 3.12+ and [UV](https://github.com/astral-sh/uv) as package manager <br>
 
 ## installation 
-`git clone https://github.com/Karo555/{REPO_NAME}` <br>
-`cd {REPO_NAME}` <br>
+`git clone https://github.com/Karo555/multiple_sequence_alignment` <br>
+`cd multiple_sequence_alignment` <br>
 
 ## setup virtual env
 `uv sync` <br>
