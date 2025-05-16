@@ -1,0 +1,18 @@
+Needleman–Wunsch Multi‐Path Alignment Report
+Parameters: match=1, mismatch=-1, gap=-2
+Sequence 1: seq1  ACGTACGT
+Sequence 2: seq2  GATTACA
+
+Path 1:
+ACGTACGT
+GATTAC-A
+Length: 8
+Identical positions: 3 (37.50%)
+Total gaps: 1
+
+Path 2:
+ACGTACGT
+GATTACA-
+Length: 8
+Identical positions: 3 (37.50%)
+Total gaps: 1

@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.black]
+line-length = 88
+
+[project]
+name = "needleman-wunsch"
+version = "0.1.0"
+description = "Needleman-Wunsch"
+license = {text = "MIT"}
+dependencies = [
+    "matplotlib",
+]
+
+[project.optional-dependencies]
+html = ["jinja2"]
+pdf = ["reportlab"]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = {find = {where = ["src"]}}
+
+[project.scripts]
+needleman-wunsch = "aligner.cli:main"
+
+[tool.mypy]
+mypy_path = "src"
+ignore_missing_imports = true

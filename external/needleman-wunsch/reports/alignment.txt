@@ -1,0 +1,18 @@
+Parameters:
+  Match score: 1
+  Mismatch score: -1
+  Gap penalty: -2
+
+Sequences:
+  seq1: ACGTACGT
+  seq2: GATTACA
+
+Alignment:
+  ACGTACGT
+  GATTAC-A
+
+Statistics:
+  Alignment length: 8
+  Identical positions: 3
+  Percentage identity: 37.50%
+  Total gaps: 1

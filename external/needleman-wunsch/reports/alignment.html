@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Needleman–Wunsch Alignment Report</title>
+    <style>
+      body { font-family: Arial, sans-serif; margin: 2em; }
+      pre { background: #f8f8f8; padding: 1em; }
+      ul, li { margin: 0.5em 0; }
+      img { max-width: 100%; height: auto; }
+    </style>
+</head>
+<body>
+  <h1>Needleman–Wunsch Alignment Report</h1>
+  <h2>Parameters</h2>
+  <ul>
+    <li>Match: 1</li>
+    <li>Mismatch: -1</li>
+    <li>Gap penalty: -2</li>
+  </ul>
+  <h2>Sequences</h2>
+  <pre>>
+Sequence 1: seq1: ACGTACGT
+Sequence 2: seq2: GATTACA</pre>
+  <h2>Alignments</h2>
+  
+    <h3>Path 1</h3>
+    <pre>ACGTACGT
+GATTAC-A</pre>
+    <ul>
+      <li>Length: 8</li>
+      <li>Matches: 3 (37.50%)</li>
+      <li>Total gaps: 1</li>
+    </ul>
+  
+  
+    <h2>Score Matrix Heatmap</h2>
+    <img src="../plots/heatmap.png" alt="Score matrix heatmap">
+  
+</body>
+</html>

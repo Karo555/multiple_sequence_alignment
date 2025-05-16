@@ -1,6 +1,14 @@
 import argparse
 import sys
 from utils.functions import *
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch')))
+
+##module_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch', 'src'))
+##if module_path not in sys.path:
+##    sys.path.append(module_path)
+
+from aligner.core import build_score_matrix
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -63,7 +71,6 @@ if __name__ == "__main__":
         validate_sequences(sequences, sequence_type)
     else:
         sequence_type = detect_sequence_type(sequences)
-
 
     print("Input method:", "Direct Input" if args.input else "FASTA File")
     if args.input:
