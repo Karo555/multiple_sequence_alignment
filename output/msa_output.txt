@@ -6,3 +6,10 @@ Alignment:
 seq1: ACGT
 seq2: AGCT
 seq3: ATGT
+
+Statistics:
+Alignment length: 4
+Matches: 2
+Mismatches: 2
+Gaps: 0
+Identity percent: 50.0

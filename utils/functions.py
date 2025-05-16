@@ -203,6 +203,39 @@ def merge_alignments_to_msa(aligned_seqs: List[str], center_index: int) -> List[
                 msa[i] += aligned_seqs[i][pos]
 
     return msa
+  
+def compute_msa_statistics(aligned_seqs: List[str]) -> dict:
+    """
+    Computes MSA statistics: identity %, match, mismatch, gap counts.
+    Assumes aligned sequences of equal length.
+    """
+    length = len(aligned_seqs[0])
+    num_seqs = len(aligned_seqs)
+    
+    matches = 0
+    mismatches = 0
+    gaps = 0
+
+    for pos in range(length):
+        column = [seq[pos] for seq in aligned_seqs]
+        if all(char == '-' for char in column):
+            continue  # skip all-gap columns
+        elif '-' in column:
+            gaps += 1
+        elif all(char == column[0] for char in column):
+            matches += 1
+        else:
+            mismatches += 1
+
+    identity = (matches / length) * 100 if length > 0 else 0.0
+
+    return {
+        "alignment_length": length,
+        "matches": matches,
+        "mismatches": mismatches,
+        "gaps": gaps,
+        "identity_percent": round(identity, 2)
+    }
 
 import os
 
@@ -226,3 +259,7 @@ def save_alignment_output(
         f.write("Alignment:\n")
         for id_, seq in zip(sequence_ids, aligned_seqs):
             f.write(f"{id_}: {seq}\n")
+        f.write("\nStatistics:\n")
+        stats = compute_msa_statistics(aligned_seqs)
+        for key, value in stats.items():
+            f.write(f"{key.replace('_', ' ').capitalize()}: {value}\n")

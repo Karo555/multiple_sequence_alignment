@@ -102,8 +102,14 @@ def main():
     print("\nFinal Multiple Sequence Alignment:")
     for i, aligned in enumerate(final_msa):
         print(f"{sequences[i].id}: {aligned}")
-    
-    # Step 7: Save MSA to file
+
+    # step 7: compute statistics
+    stats = compute_msa_statistics(final_msa)
+
+    print("\nAlignment Statistics:")
+    for key, value in stats.items():
+        print(f"{key.replace('_', ' ').capitalize()}: {value}")
+
     output_file = "output/msa_output.txt"
     save_alignment_output(
     output_file,
@@ -114,6 +120,16 @@ def main():
     )
     print(f"\nAlignment saved to {output_file}")
 
+    # Step 8: Save MSA to file
+    output_file = "output/msa_output.txt"
+    save_alignment_output(
+    output_file,
+    final_msa,
+    [s.id for s in sequences],
+    scoring,
+    center_index
+    )
+    print(f"\nAlignment saved to {output_file}")
 
 if __name__ == "__main__":
     main()
