@@ -1,4 +1,10 @@
-from src.aligner.core import needleman_wunsch_alignment
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch', 'src')))
+from typing import List
+from aligner.core import needleman_wunsch_alignment
+from aligner.models import Sequence
+
 
 class ScoringScheme:
     def __init__(self, match=1, mismatch=-1, gap=-2):
@@ -9,20 +15,22 @@ class ScoringScheme:
     def __repr__(self):
         return f"Scoring(match={self.match}, mismatch={self.mismatch}, gap={self.gap})"
 
+
 VALID_CHARS = {
     "dna": set("ACGT"),
     "rna": set("ACGU"),
     "protein": set("ACDEFGHIKLMNPQRSTVWY")
 }
 
-def normalize_sequences(seq_str):
+
+def normalize_sequences(seq_str: str) -> List[str]:
     """
     Splits and uppercases space-separated sequences from --input.
     """
     return [seq.strip().upper() for seq in seq_str.strip().split() if seq.strip()]
 
 
-def detect_sequence_type(seqs):
+def detect_sequence_type(seqs: List[str]) -> str:
     """
     Auto-detect the type of sequences (dna, rna, protein).
     Returns a string or raises ValueError if ambiguous or invalid.
@@ -41,7 +49,7 @@ def detect_sequence_type(seqs):
         raise ValueError(f"Ambiguous sequence type detected: matches {matching_types}")
 
 
-def validate_sequences(seqs, seq_type):
+def validate_sequences(seqs: List[str], seq_type: str) -> None:
     """
     Validates sequences against the selected or detected sequence type.
     Raises ValueError if any invalid characters are found.
@@ -54,8 +62,9 @@ def validate_sequences(seqs, seq_type):
             raise ValueError(
                 f"Sequence {i + 1} contains invalid characters for {seq_type.upper()}: {invalid}"
             )
-        
-def parse_fasta_file(filepath):
+
+
+def parse_fasta_file(filepath: str) -> List[str]:
     """
     Parses a FASTA file and returns a list of uppercased sequences.
     Supports multi-line FASTA entries.
@@ -68,12 +77,12 @@ def parse_fasta_file(filepath):
             for line in f:
                 line = line.strip()
                 if not line:
-                    continue 
+                    continue
                 if line.startswith(">"):
                     if current_seq:
                         sequences.append(''.join(current_seq).upper())
                         current_seq = []
-                    continue 
+                    continue
                 else:
                     current_seq.append(line)
 
@@ -90,7 +99,8 @@ def parse_fasta_file(filepath):
 
     return sequences
 
-def build_pairwise_score_matrix(sequences, scoring):
+
+def build_pairwise_score_matrix(sequences: List[Sequence], scoring: ScoringScheme) -> List[List[int]]:
     """
     Compute pairwise Needleman-Wunsch alignment scores for all input sequences.
     Returns a symmetric n x n score matrix.
@@ -101,8 +111,8 @@ def build_pairwise_score_matrix(sequences, scoring):
     for i in range(n):
         for j in range(i + 1, n):
             _, _, score = needleman_wunsch_alignment(
-                sequences[i],
-                sequences[j],
+                sequences[i].sequence,
+                sequences[j].sequence,
                 scoring.match,
                 scoring.mismatch,
                 scoring.gap
@@ -112,7 +122,8 @@ def build_pairwise_score_matrix(sequences, scoring):
 
     return score_matrix
 
-def convert_scores_to_distances(score_matrix):
+
+def convert_scores_to_distances(score_matrix: List[List[int]]) -> List[List[int]]:
     """
     Converts a score matrix into a distance matrix using:
     distance = max_score - score
@@ -131,14 +142,87 @@ def convert_scores_to_distances(score_matrix):
             if i != j:
                 distance_matrix[i][j] = max_score - score_matrix[i][j]
             else:
-                distance_matrix[i][j] = 0  # distance to self
+                distance_matrix[i][j] = 0
 
     return distance_matrix
 
-def find_center_sequence(distance_matrix):
+
+def find_center_sequence(distance_matrix: List[List[int]]) -> int:
     """
     Finds the index of the sequence with the smallest total distance to others.
     """
     total_distances = [sum(row) for row in distance_matrix]
     center_index = total_distances.index(min(total_distances))
     return center_index
+
+
+def align_all_to_center(sequences: List[Sequence], center_index: int, scoring: ScoringScheme) -> List[str]:
+    """
+    Aligns all sequences to the center sequence using Needleman-Wunsch.
+    Returns a list of aligned sequences (with gaps), preserving the order of input.
+    """
+    center_seq = sequences[center_index].sequence
+    aligned_sequences = [None] * len(sequences)
+
+    aligned_sequences[center_index] = center_seq
+
+    for i, seq in enumerate(sequences):
+        if i == center_index:
+            continue
+        aligned_center, aligned_other, _ = needleman_wunsch_alignment(
+            center_seq,
+            seq.sequence,
+            scoring.match,
+            scoring.mismatch,
+            scoring.gap
+        )
+        aligned_sequences[center_index] = aligned_center  # updated alignment
+        aligned_sequences[i] = aligned_other
+
+    return aligned_sequences
+
+def merge_alignments_to_msa(aligned_seqs: List[str], center_index: int) -> List[str]:
+    """
+    Ensures all sequences align with the final gapped center sequence.
+    Inserts gaps as needed so that all sequences share the same gap structure.
+    """
+    final_center = aligned_seqs[center_index]
+    msa = [''] * len(aligned_seqs)
+
+    for pos in range(len(final_center)):
+        if final_center[pos] == '-':
+            # Insert a gap at this position in all sequences
+            for i in range(len(aligned_seqs)):
+                if len(aligned_seqs[i]) <= pos or aligned_seqs[i][pos] != '-':
+                    msa[i] += '-'
+                else:
+                    msa[i] += aligned_seqs[i][pos]
+        else:
+            # Add the actual character from each sequence
+            for i in range(len(aligned_seqs)):
+                msa[i] += aligned_seqs[i][pos]
+
+    return msa
+
+import os
+
+def save_alignment_output(
+    output_path: str,
+    aligned_seqs: List[str],
+    sequence_ids: List[str],
+    scoring: ScoringScheme,
+    center_index: int
+):
+    """
+    Saves the final alignment and scoring info to a text file.
+    """
+    # Ensure output directory exists
+    os.makedirs(os.path.dirname(output_path), exist_ok=True)
+
+    with open(output_path, "w") as f:
+        f.write("# MSA Output\n")
+        f.write(f"Scoring: match={scoring.match}, mismatch={scoring.mismatch}, gap={scoring.gap}\n")
+        f.write(f"Center Sequence Index: {center_index}\n\n")
+        f.write("Alignment:\n")
+        for id_, seq in zip(sequence_ids, aligned_seqs):
+            f.write(f"{id_}: {seq}\n")

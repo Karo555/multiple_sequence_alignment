@@ -1,0 +1,8 @@
+# MSA Output
+Scoring: match=1, mismatch=-1, gap=-2
+Center Sequence Index: 0
+
+Alignment:
+seq1: ACGT
+seq2: AGCT
+seq3: ATGT

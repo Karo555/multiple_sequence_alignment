@@ -1,6 +1,12 @@
+import sys
+import os
 import argparse
-from re import match
 from utils.functions import *
+from aligner.models import Sequence
+
+# Ensure submodule path is added for aligner imports
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch', 'src')))
+
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -44,37 +50,70 @@ def parse_arguments():
         help="Penalty for a gap (default: -2)"
     )
 
-
-    args = parser.parse_args()
-    return args
+    return parser.parse_args()
 
 
-if __name__ == "__main__":
+def main():
     args = parse_arguments()
     scoring = ScoringScheme(match=args.match, mismatch=args.mismatch, gap=args.gap)
     print("Scoring Scheme:", scoring)
-  
-    if args.input:
-        sequences = normalize_sequences(args.input)
-    else:
-        sequences = parse_fasta_file(args.file)
 
+    # Step 1: Read sequences
+    if args.input:
+        raw_sequences = normalize_sequences(args.input)
+    else:
+        raw_sequences = parse_fasta_file(args.file)
+
+    # Step 2: Detect or validate sequence type
     if args.type:
         sequence_type = args.type
-        validate_sequences(sequences, sequence_type)
+        validate_sequences(raw_sequences, sequence_type)
     else:
-        sequence_type = detect_sequence_type(sequences)
+        sequence_type = detect_sequence_type(raw_sequences)
 
     print("Input method:", "Direct Input" if args.input else "FASTA File")
-    if args.input:
-        print("Validated Sequences:", sequences)
-    else:
-        print("FASTA File Path:", args.file)
-    print("Detected type:", args.type if args.type else "Auto-detect")
+    print("Validated Sequences:", raw_sequences)
+    print("Detected type:", sequence_type)
+
+    # Step 3: Create Sequence objects
+    sequences = [
+        Sequence(f"seq{i+1}", seq, alphabet=sequence_type)
+        for i, seq in enumerate(raw_sequences)
+    ]
+
+    # Step 4: Build score + distance matrices
     score_matrix = build_pairwise_score_matrix(sequences, scoring)
-    
     distance_matrix = convert_scores_to_distances(score_matrix)
     center_index = find_center_sequence(distance_matrix)
 
     print(f"Center sequence index: {center_index}")
-    print(f"Center sequence: {sequences[center_index]}")
+    print(f"Center sequence: {sequences[center_index].sequence}")
+
+    # Step 5: Align all to center
+    aligned_seqs = align_all_to_center(sequences, center_index, scoring)
+
+    print("\nAligned Sequences (center-aligned):")
+    for i, aligned in enumerate(aligned_seqs):
+        print(f"{sequences[i].id}: {aligned}")
+
+    # Step 6: MSA merging logic
+    final_msa = merge_alignments_to_msa(aligned_seqs, center_index)
+
+    print("\nFinal Multiple Sequence Alignment:")
+    for i, aligned in enumerate(final_msa):
+        print(f"{sequences[i].id}: {aligned}")
+    
+    # Step 7: Save MSA to file
+    output_file = "output/msa_output.txt"
+    save_alignment_output(
+    output_file,
+    final_msa,
+    [s.id for s in sequences],
+    scoring,
+    center_index
+    )
+    print(f"\nAlignment saved to {output_file}")
+
+
+if __name__ == "__main__":
+    main()
