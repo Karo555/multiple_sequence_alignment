@@ -25,12 +25,34 @@ def parse_arguments():
         help="Specify the sequence type if known (dna, rna, protein)"
     )
 
+    parser.add_argument(
+        "--match",
+        type=float,
+        default=1,
+        help="Score for a match (default: 1)"
+    )
+    parser.add_argument(
+        "--mismatch",
+        type=float,
+        default=-1,
+        help="Penalty for a mismatch (default: -1)"
+    )
+    parser.add_argument(
+        "--gap",
+        type=float,
+        default=-2,
+        help="Penalty for a gap (default: -2)"
+    )
+
+
     args = parser.parse_args()
     return args
 
 
 if __name__ == "__main__":
     args = parse_arguments()
+    scoring = ScoringScheme(match=args.match, mismatch=args.mismatch, gap=args.gap)
+    print("Scoring Scheme:", scoring)
     if args.input:
         sequences = normalize_sequences(args.input)
     else:

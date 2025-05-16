@@ -1,5 +1,14 @@
 import re
 
+class ScoringScheme:
+    def __init__(self, match=1, mismatch=-1, gap=-2):
+        self.match = match
+        self.mismatch = mismatch
+        self.gap = gap
+
+    def __repr__(self):
+        return f"Scoring(match={self.match}, mismatch={self.mismatch}, gap={self.gap})"
+
 VALID_CHARS = {
     "dna": set("ACGT"),
     "rna": set("ACGU"),
