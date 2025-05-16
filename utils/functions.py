@@ -45,3 +45,38 @@ def validate_sequences(seqs, seq_type):
             raise ValueError(
                 f"Sequence {i + 1} contains invalid characters for {seq_type.upper()}: {invalid}"
             )
+        
+def parse_fasta_file(filepath):
+    """
+    Parses a FASTA file and returns a list of uppercased sequences.
+    Supports multi-line FASTA entries.
+    """
+    sequences = []
+    current_seq = []
+
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue 
+                if line.startswith(">"):
+                    if current_seq:
+                        sequences.append(''.join(current_seq).upper())
+                        current_seq = []
+                    continue 
+                else:
+                    current_seq.append(line)
+
+            if current_seq:
+                sequences.append(''.join(current_seq).upper())
+
+    except FileNotFoundError:
+        raise FileNotFoundError(f"FASTA file not found: {filepath}")
+    except Exception as e:
+        raise RuntimeError(f"Error reading FASTA file: {e}")
+
+    if not sequences:
+        raise ValueError("No sequences found in FASTA file.")
+
+    return sequences

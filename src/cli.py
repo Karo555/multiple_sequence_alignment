@@ -1,6 +1,6 @@
 import argparse
 import sys
-from utils.functions import normalize_sequences, validate_sequences, detect_sequence_type
+from utils.functions import *
 
 def parse_arguments():
     parser = argparse.ArgumentParser(
@@ -34,7 +34,7 @@ if __name__ == "__main__":
     if args.input:
         sequences = normalize_sequences(args.input)
     else:
-        sequences = ["ACGT", "AGGT", "ACCT"]  # placeholder until FASTA parser is added
+        sequences = parse_fasta_file(args.file)
 
     if args.type:
         sequence_type = args.type
@@ -42,12 +42,10 @@ if __name__ == "__main__":
     else:
         sequence_type = detect_sequence_type(sequences)
 
-    print(f"Detected type: {sequence_type}")
-
 
     print("Input method:", "Direct Input" if args.input else "FASTA File")
     if args.input:
-        print("Sequences:", args.input)
+        print("Validated Sequences:", sequences)
     else:
         print("FASTA File Path:", args.file)
-    print("Sequence Type:", args.type if args.type else "Auto-detect")
+    print("Detected type:", args.type if args.type else "Auto-detect")
