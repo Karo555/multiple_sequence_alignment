@@ -1,0 +1,3 @@
+[submodule "needleman-wunsch"]
+	path = needleman-wunsch
+	url = https://github.com/Karo555/needleman-wunsch
