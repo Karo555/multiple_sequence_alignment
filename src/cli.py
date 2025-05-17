@@ -110,7 +110,7 @@ def main():
     for key, value in stats.items():
         print(f"{key.replace('_', ' ').capitalize()}: {value}")
 
-    output_file = "output/msa_output.txt"
+    output_file = "results/msa_output.txt"
     save_alignment_output(
     output_file,
     final_msa,
@@ -121,7 +121,7 @@ def main():
     print(f"\nAlignment saved to {output_file}")
 
     # Step 8: Save MSA to file
-    output_file = "output/msa_output.txt"
+    output_file = "results/msa_output.txt"
     save_alignment_output(
     output_file,
     final_msa,

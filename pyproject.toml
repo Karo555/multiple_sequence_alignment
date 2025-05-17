@@ -1,13 +1,28 @@
 [project]
-name = "MSA"
+name = "multiple-sequence-alignment"
 version = "0.1.0"
-description = "Add your description here"
+description = "Multiple Sequence Alignment (MSA) tool with GUI and CLI using the Center Star method."
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.8"
+license = { text = "MIT" }
 dependencies = [
-    "fastapi>=0.115.1so2",
-    "numpy",
+    "pillow>=10.0.0",
+    "numpy>=1.20.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "black",
+    "flake8"
 ]
 
 [tool.ux]
 venv = "MSA"
+
+[tool.setuptools]
+packages = ["src", "utils", "external.needleman-wunsch.src"]
+
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"

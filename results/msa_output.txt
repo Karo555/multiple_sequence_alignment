@@ -5,11 +5,11 @@ Center Sequence Index: 0
 Alignment:
 seq1: ACGT
 seq2: AGCT
-seq3: ATGT
+seq3: GTAC
 
 Statistics:
 Alignment length: 4
-Matches: 2
-Mismatches: 2
+Matches: 0
+Mismatches: 4
 Gaps: 0
-Identity percent: 50.0
+Identity percent: 0.0

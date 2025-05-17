@@ -427,34 +427,53 @@ class MSAApplication:
             messagebox.showerror("Save Error", str(e))
             self.status_var.set("Error saving results")
     
+
     def _export_alignment_image(self):
         """Export the alignment visualization as an image"""
         if not hasattr(self, "last_msa") or not self.last_msa:
             messagebox.showinfo("No Alignment", "Please run an alignment first.")
             return
-            
+
         filepath = filedialog.asksaveasfilename(
             title="Export Alignment Image",
             defaultextension=".png",
             filetypes=[("PNG images", "*.png"), ("All files", "*")]
         )
-        
+
         if not filepath:
             return
-            
+
         try:
-            # Get the canvas dimensions
-            x0, y0, x1, y1 = self.alignment_canvas.bbox("all")
-            
-            # Create a temporary postscript file
+            # Ustaw scrollregion na pełny zakres zawartości
+            self.alignment_canvas.update_idletasks()
+            bbox = self.alignment_canvas.bbox("all")
+            if bbox is None:
+                messagebox.showerror("Export Error", "Nothing to export on the canvas.")
+                return
+            x0, y0, x1, y1 = bbox
+            width, height = x1 - x0, y1 - y0
+
+            # Tymczasowo ustaw rozmiar canvasu na rozmiar całej zawartości
+            orig_width = self.alignment_canvas.winfo_width()
+            orig_height = self.alignment_canvas.winfo_height()
+            self.alignment_canvas.config(width=width, height=height)
+            self.alignment_canvas.update()
+
             ps_file = filepath + ".ps"
-            self.alignment_canvas.postscript(file=ps_file, colormode="color", 
-                                          width=x1-x0, height=y1-y0)
-            
+            self.alignment_canvas.postscript(
+                file=ps_file,
+                colormode="color",
+                x=x0, y=y0, width=width, height=height,
+                pagewidth=width-1, pageheight=height-1
+            )
+
+            # Przywróć oryginalny rozmiar canvasu
+            self.alignment_canvas.config(width=orig_width, height=orig_height)
+            self.alignment_canvas.update()
+
             # Konwersja PS do PNG za pomocą PIL
             try:
                 with Image.open(ps_file) as img:
-                    # PIL może wymagać konwersji do RGB
                     img = img.convert("RGB")
                     img.save(filepath, "PNG")
                 os.remove(ps_file)
