@@ -1,11 +1,24 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
 import sys, os
+from tkinter import filedialog
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from utils.functions import *
 from aligner.models import Sequence
 
+def load_fasta_file():
+    filepath = filedialog.askopenfilename(filetypes=[("FASTA files", "*.fasta *.fa"), ("All files", "*")])
+    if not filepath:
+        return
+    try:
+        sequences = parse_fasta_file(filepath)
+        sequence_input.delete("1.0", tk.END)
+        for seq in sequences:
+            sequence_input.insert(tk.END, seq + "\n")
+    except Exception as e:
+        messagebox.showerror("File Load Error", str(e))
+        
 def run_alignment():
     try:
         raw_input = sequence_input.get("1.0", tk.END).strip()
@@ -66,10 +79,15 @@ root.geometry("800x650")
 mainframe = ttk.Frame(root, padding="10")
 mainframe.grid(row=0, column=0, sticky=("N", "W", "E", "S"))
 
+
 # Sequence input
 ttk.Label(mainframe, text="Enter sequences (one per line):").grid(row=0, column=0, sticky="W")
 sequence_input = tk.Text(mainframe, height=6, width=80)
 sequence_input.grid(row=1, column=0, columnspan=3, pady=5)
+
+style = ttk.Style()
+style.configure("Purple.TButton", background="#a259e6", foreground="black", font=("Arial", 12, "bold"))
+ttk.Button(mainframe, text="Load from FASTA", command=load_fasta_file, style="Purple.TButton").grid(row=2, column=0, sticky="W", pady=(0, 10))
 
 # Sequence type selection
 ttk.Label(mainframe, text="Sequence Type:").grid(row=2, column=0, sticky="E")
@@ -92,8 +110,6 @@ gap_var = tk.StringVar(value="-2")
 ttk.Entry(mainframe, textvariable=gap_var, width=5).grid(row=5, column=1, sticky="W")
 
 # Run button
-style = ttk.Style()
-style.configure("Purple.TButton", background="#a259e6", foreground="black", font=("Arial", 12, "bold"))
 ttk.Button(mainframe, text="RUN", command=run_alignment, style="Purple.TButton").grid(row=6, column=0, columnspan=2, pady=10)
 
 # Output display
