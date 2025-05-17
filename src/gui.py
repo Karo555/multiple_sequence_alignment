@@ -8,13 +8,17 @@ from utils.functions import *
 from aligner.models import Sequence
 
 def load_fasta_file():
-    filepath = filedialog.askopenfilename(filetypes=[("FASTA files", "*.fasta *.fa"), ("All files", "*")])
-    if not filepath:
+    filepaths = filedialog.askopenfilenames(filetypes=[("FASTA files", "*.fasta *.fa"), ("All files", "*")])
+    if not filepaths:
         return
     try:
-        sequences = parse_fasta_file(filepath)
+        all_sequences = []
+        for filepath in filepaths:
+            sequences = parse_fasta_file(filepath)
+            all_sequences.extend(sequences)
+
         sequence_input.delete("1.0", tk.END)
-        for seq in sequences:
+        for seq in all_sequences:
             sequence_input.insert(tk.END, seq + "\n")
     except Exception as e:
         messagebox.showerror("File Load Error", str(e))
