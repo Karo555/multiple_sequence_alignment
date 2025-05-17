@@ -7,6 +7,7 @@ from pathlib import Path
 import threading
 from typing import List, Dict, Tuple, Optional
 import json
+from PIL import Image 
 
 # Add parent directory to path for importing modules
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
@@ -450,12 +451,22 @@ class MSAApplication:
             self.alignment_canvas.postscript(file=ps_file, colormode="color", 
                                           width=x1-x0, height=y1-y0)
             
-            # For a more robust solution, you'd use a library like PIL to convert PS to PNG
-            # For simplicity, we'll just inform the user
-            messagebox.showinfo("Export", 
-                             f"Alignment exported as PostScript file: {ps_file}\n"
-                             "You can convert it to PNG using an image editor.")
-            self.status_var.set(f"Alignment exported to: {os.path.basename(ps_file)}")
+            # Konwersja PS do PNG za pomocą PIL
+            try:
+                with Image.open(ps_file) as img:
+                    # PIL może wymagać konwersji do RGB
+                    img = img.convert("RGB")
+                    img.save(filepath, "PNG")
+                os.remove(ps_file)
+                messagebox.showinfo("Export", f"Alignment exported as PNG file: {filepath}")
+                self.status_var.set(f"Alignment exported to: {os.path.basename(filepath)}")
+            except Exception as pil_err:
+                messagebox.showwarning(
+                    "Export Warning",
+                    f"PostScript file was created as {ps_file}, but could not be converted to PNG automatically.\n"
+                    f"Error: {pil_err}\nYou can convert it manually using an image editor."
+                )
+                self.status_var.set(f"Alignment exported to: {os.path.basename(ps_file)} (PS only)")
         except Exception as e:
             messagebox.showerror("Export Error", str(e))
             self.status_var.set("Error exporting alignment")
