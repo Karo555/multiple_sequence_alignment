@@ -16,12 +16,11 @@ def load_fasta_file():
         for filepath in filepaths:
             sequences = parse_fasta_file(filepath)
             all_sequences.extend(sequences)
-
-        sequence_input.delete("1.0", tk.END)
         for seq in all_sequences:
-            sequence_input.insert(tk.END, seq + "\n")
+            sequence_input.insert(tk.END, seq.strip() + "\n")
     except Exception as e:
         messagebox.showerror("File Load Error", str(e))
+
 
 def save_output_to_file():
     filepath = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*")])
