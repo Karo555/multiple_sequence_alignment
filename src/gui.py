@@ -18,6 +18,18 @@ def load_fasta_file():
             sequence_input.insert(tk.END, seq + "\n")
     except Exception as e:
         messagebox.showerror("File Load Error", str(e))
+
+def save_output_to_file():
+    filepath = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text files", "*.txt"), ("All files", "*")])
+    if not filepath:
+        return
+    try:
+        content = result_text.get("1.0", tk.END).strip()
+        with open(filepath, "w") as f:
+            f.write(content)
+        messagebox.showinfo("Saved", f"Results saved to {filepath}")
+    except Exception as e:
+        messagebox.showerror("Save Error", str(e))
         
 def run_alignment():
     try:
@@ -90,7 +102,7 @@ style.configure("Purple.TButton", background="#a259e6", foreground="black", font
 ttk.Button(mainframe, text="Load from FASTA", command=load_fasta_file, style="Purple.TButton").grid(row=2, column=0, sticky="W", pady=(0, 10))
 
 # Sequence type selection
-ttk.Label(mainframe, text="Sequence Type:").grid(row=2, column=0, sticky="E")
+ttk.Label(mainframe, text="Sequence Type:").grid(row=3, column=0, sticky="E")
 seq_type_var = tk.StringVar()
 type_dropdown = ttk.Combobox(mainframe, textvariable=seq_type_var, values=["", "dna", "rna", "protein"], state="readonly")
 type_dropdown.grid(row=2, column=1, sticky="W")
@@ -115,5 +127,8 @@ ttk.Button(mainframe, text="RUN", command=run_alignment, style="Purple.TButton")
 # Output display
 result_text = tk.Text(mainframe, height=20, width=90)
 result_text.grid(row=7, column=0, columnspan=3, pady=10)
+
+#output file button
+ttk.Button(mainframe, text="Save Output", command=save_output_to_file, style="Purple.TButton").grid(row=8, column=0, sticky="E")
 
 root.mainloop()
