@@ -105,9 +105,19 @@ class MSAApplication:
             font=("Segoe UI", 9)
         )
         
-        # Configure the notebook style
-        self.style.configure("TNotebook", background=self.COLORS["background"])
-        self.style.configure("TNotebook.Tab", padding=[10, 5], font=("Segoe UI", 10))
+         # Notebook style - poprawa aktywnej zakładki
+        self.style.configure("TNotebook", background=self.COLORS["background"], borderwidth=0)
+        self.style.configure("TNotebook.Tab", padding=[10, 5], font=("Segoe UI", 10), background=self.COLORS["surface"])
+        self.style.map("TNotebook.Tab",
+            background=[
+                ("selected", self.COLORS["secondary"]),  # kolor aktywnej zakładki
+                ("!selected", self.COLORS["surface"])
+            ],
+            foreground=[
+                ("selected", self.COLORS["on_secondary"]),  # kolor tekstu aktywnej zakładki
+                ("!selected", "black")
+            ]
+        )
         
     def _create_menu(self):
         """Create the application menu bar"""
@@ -255,7 +265,7 @@ class MSAApplication:
         
         # Run button
         ttk.Button(param_frame, text="RUN ALIGNMENT", 
-                  command=self._run_alignment, style="Primary.TButton").grid(
+                  command=self._run_alignment, style="Secondary.TButton").grid(
                       row=2, column=0, columnspan=3, sticky="ew", pady=10, padx=50)
     
     def _create_output_section(self):
