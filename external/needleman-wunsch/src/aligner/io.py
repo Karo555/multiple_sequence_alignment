@@ -10,7 +10,7 @@ def read_fasta(path: str, alphabet: str = "dna") -> list[Sequence]:
     Each sequence is represented by a Sequence object with the following attributes:
     - id: The sequence ID (header line without the leading '>').
     - sequence: The sequence string (all lines after the header line).
-    - alphabet: The alphabet used for the sequence (e.g., "dna", "protein").
+    - alphabet: The alphabet used for the sequence (e.g., "dna")
     The function raises a ValueError if the file is empty or if there are no valid sequences.
     Parameters
     ----------

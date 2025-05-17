@@ -54,16 +54,6 @@ def test_read_fasta_empty(tmp_path):
         read_fasta(str(path))
 
 
-def test_read_fasta_protein(tmp_path):
-    content = ">prot1\nARNDCQ\n"
-    path = tmp_path / "protein.fasta"
-    path.write_text(content)
-    records = read_fasta(str(path), alphabet="protein")
-    seq = records[0]
-    assert seq.id == "prot1"
-    assert seq.sequence == "ARNDCQ"
-
-
 def test_read_manual_valid(monkeypatch):
     inputs = iter(["seqA", "acgt", "seqB", "tttt"])
     monkeypatch.setattr("builtins.input", lambda prompt="": next(inputs))

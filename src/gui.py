@@ -237,12 +237,6 @@ class MSAApplication:
         for i in range(3):
             param_frame.columnconfigure(i, weight=1)
         
-        # Sequence type selection
-        ttk.Label(param_frame, text="Sequence Type:").grid(row=0, column=0, sticky="e", pady=5, padx=5)
-        type_dropdown = ttk.Combobox(param_frame, textvariable=self.seq_type_var, 
-                                    values=["", "dna", "rna", "protein"], state="readonly", width=10)
-        type_dropdown.grid(row=0, column=1, sticky="w", pady=5)
-        ttk.Label(param_frame, text="(Leave empty for auto-detection)").grid(row=0, column=2, sticky="w")
         
         # Scoring parameters
         scoring_frame = ttk.Frame(param_frame)
@@ -674,11 +668,11 @@ class MSAApplication:
 
 ## Overview
 This application performs multiple sequence alignment using the Center Star Method. 
-It aligns DNA, RNA, or protein sequences to identify similarities and differences.
+It aligns DNA sequences to identify similarities and differences.
 
 ## Features
 - Load sequences from FASTA files or paste them directly
-- Auto-detection of sequence type (DNA, RNA, protein)
+- Auto-detection of sequence type (DNA))
 - Customizable scoring parameters
 - Visual alignment display
 - Statistics calculation
@@ -693,8 +687,6 @@ It aligns DNA, RNA, or protein sequences to identify similarities and difference
 
 ## Sequence Types
 - DNA: Nucleotide sequences with A, T, G, C
-- RNA: Nucleotide sequences with A, U, G, C
-- Protein: Amino acid sequences
 
 ## Scoring Parameters
 - Match: Score for matching characters
@@ -725,7 +717,7 @@ It aligns DNA, RNA, or protein sequences to identify similarities and difference
             "Multiple Sequence Alignment Tool\n"
             "Version 2.0\n\n"
             "This application performs multiple sequence alignment using the Center Star Method.\n"
-            "It can align DNA, RNA, or protein sequences to identify similarities and differences."
+            "It can align DNA sequences to identify similarities and differences."
         )
     
     def _save_settings(self):
@@ -797,11 +789,11 @@ It aligns DNA, RNA, or protein sequences to identify similarities and difference
             # Determine sequence type
             seq_type = self.seq_type_var.get()
             if not seq_type:
-                sequence_type = detect_sequence_type(sequences)
+                sequence_type = "dna"
                 # Update the dropdown with detected type
                 self.root.after(0, lambda: self.seq_type_var.set(sequence_type))
             else:
-                sequence_type = seq_type
+                sequence_type = "dna"
             
             # Validate sequences based on type
             validate_sequences(sequences, sequence_type)

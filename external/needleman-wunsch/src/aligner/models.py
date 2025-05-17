@@ -5,7 +5,7 @@ from typing import Literal
 class Sequence:
     """
     A simple container for an ID and a biological sequence string.
-    The sequence can be either DNA or protein, and the class validates the sequence
+    The sequence can be DNA  and the class validates the sequence
     against the specified alphabet.
     Attributes
     ----------
@@ -31,7 +31,7 @@ class Sequence:
         self,
         identifier: str,
         sequence: str,
-        alphabet: Literal["dna", "protein"] = "dna",
+        alphabet: Literal["dna"] = "dna",
     ):
         self.id = identifier
         self.sequence = sequence.upper()
@@ -45,8 +45,6 @@ class Sequence:
         """
         if self.alphabet.lower() == "dna":
             pat = r"^[ACGTacgt]*$"
-        elif self.alphabet.lower() == "protein":
-            pat = r"^[ACDEFGHIKLMNPQRSTVWYacdefghiklmnpqrstvwy]*$"
         else:
             raise ValueError(f"Unknown alphabet: {self.alphabet}")
 

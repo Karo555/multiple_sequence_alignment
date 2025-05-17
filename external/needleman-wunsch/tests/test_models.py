@@ -14,17 +14,6 @@ def test_invalid_dna_sequence_raises():
         Sequence(identifier="bad", sequence="ACGTX")
     assert "Invalid characters" in str(exc.value)
 
-
-def test_valid_protein_sequence():
-    prot = Sequence(identifier="prot1", sequence="ARNDCEQGHI", alphabet="protein")
-    assert len(prot) == 10
-
-
-def test_invalid_protein_sequence_raises():
-    with pytest.raises(ValueError):
-        Sequence(identifier="badprot", sequence="ARNDXE", alphabet="protein")
-
-
 def test_unknown_alphabet_raises():
     with pytest.raises(ValueError):
         Sequence(identifier="foo", sequence="ACGT", alphabet="rna")

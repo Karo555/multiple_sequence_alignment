@@ -17,9 +17,7 @@ class ScoringScheme:
 
 
 VALID_CHARS = {
-    "dna": set("ACGT"),
-    "rna": set("ACGU"),
-    "protein": set("ACDEFGHIKLMNPQRSTVWY")
+    "dna": set("ACGT")
 }
 
 
@@ -32,7 +30,7 @@ def normalize_sequences(seq_str: str) -> List[str]:
 
 def detect_sequence_type(seqs: List[str]) -> str:
     """
-    Auto-detect the type of sequences (dna, rna, protein).
+    Auto-detect the type of sequences (dna).
     Returns a string or raises ValueError if ambiguous or invalid.
     """
     matching_types = []

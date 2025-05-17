@@ -112,9 +112,9 @@ def parse_args(args=None):
 
     parser.add_argument(
         "--alphabet",
-        choices=["dna", "protein"],
+        choices=["dna"],
         default="dna",
-        help="Alphabet for sequences (dna or protein)",
+        help="Alphabet for sequences (dna)",
     )
 
     return parser.parse_args(args)

@@ -27,8 +27,8 @@ def parse_arguments():
 
     parser.add_argument(
         "--type",
-        choices=["dna", "rna", "protein"],
-        help="Specify the sequence type if known (dna, rna, protein)"
+        choices=["dna", "rna"],
+        help="Specify the sequence type if known (dna)"
     )
 
     parser.add_argument(
