@@ -1,11 +1,10 @@
 import tkinter as tk
 from tkinter import ttk, messagebox
-import os
-import sys
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..', 'external', 'needleman-wunsch', 'src')))
+import sys, os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from utils.functions import *
 from aligner.models import Sequence
-
 
 def run_alignment():
     try:
@@ -15,7 +14,12 @@ def run_alignment():
         if not sequences:
             raise ValueError("Please enter at least one valid sequence.")
 
-        sequence_type = detect_sequence_type(sequences)
+        seq_type = seq_type_var.get()
+        if not seq_type:
+            sequence_type = detect_sequence_type(sequences)
+        else:
+            sequence_type = seq_type
+
         validate_sequences(sequences, sequence_type)
 
         seq_objects = [
@@ -57,7 +61,7 @@ def run_alignment():
 # GUI setup
 root = tk.Tk()
 root.title("MSA - Center Star Method")
-root.geometry("800x600")
+root.geometry("800x650")
 
 mainframe = ttk.Frame(root, padding="10")
 mainframe.grid(row=0, column=0, sticky=("N", "W", "E", "S"))
@@ -67,26 +71,33 @@ ttk.Label(mainframe, text="Enter sequences (one per line):").grid(row=0, column=
 sequence_input = tk.Text(mainframe, height=6, width=80)
 sequence_input.grid(row=1, column=0, columnspan=3, pady=5)
 
+# Sequence type selection
+ttk.Label(mainframe, text="Sequence Type:").grid(row=2, column=0, sticky="E")
+seq_type_var = tk.StringVar()
+type_dropdown = ttk.Combobox(mainframe, textvariable=seq_type_var, values=["", "dna", "rna", "protein"], state="readonly")
+type_dropdown.grid(row=2, column=1, sticky="W")
+type_dropdown.set("")
+
 # Scoring inputs
-ttk.Label(mainframe, text="Match:").grid(row=2, column=0, sticky="E")
+ttk.Label(mainframe, text="Match:").grid(row=3, column=0, sticky="E")
 match_var = tk.StringVar(value="1")
-ttk.Entry(mainframe, textvariable=match_var, width=5).grid(row=2, column=1, sticky="W")
+ttk.Entry(mainframe, textvariable=match_var, width=5).grid(row=3, column=1, sticky="W")
 
-ttk.Label(mainframe, text="Mismatch:").grid(row=3, column=0, sticky="E")
+ttk.Label(mainframe, text="Mismatch:").grid(row=4, column=0, sticky="E")
 mismatch_var = tk.StringVar(value="-1")
-ttk.Entry(mainframe, textvariable=mismatch_var, width=5).grid(row=3, column=1, sticky="W")
+ttk.Entry(mainframe, textvariable=mismatch_var, width=5).grid(row=4, column=1, sticky="W")
 
-ttk.Label(mainframe, text="Gap:").grid(row=4, column=0, sticky="E")
+ttk.Label(mainframe, text="Gap:").grid(row=5, column=0, sticky="E")
 gap_var = tk.StringVar(value="-2")
-ttk.Entry(mainframe, textvariable=gap_var, width=5).grid(row=4, column=1, sticky="W")
+ttk.Entry(mainframe, textvariable=gap_var, width=5).grid(row=5, column=1, sticky="W")
 
 # Run button
 style = ttk.Style()
 style.configure("Purple.TButton", background="#a259e6", foreground="black", font=("Arial", 12, "bold"))
-ttk.Button(mainframe, text="RUN", command=run_alignment, style="Purple.TButton").grid(row=5, column=0, columnspan=2, pady=10)
+ttk.Button(mainframe, text="RUN", command=run_alignment, style="Purple.TButton").grid(row=6, column=0, columnspan=2, pady=10)
 
 # Output display
 result_text = tk.Text(mainframe, height=20, width=90)
-result_text.grid(row=6, column=0, columnspan=3, pady=10)
+result_text.grid(row=7, column=0, columnspan=3, pady=10)
 
 root.mainloop()
