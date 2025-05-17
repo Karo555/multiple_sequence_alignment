@@ -26,6 +26,17 @@ Python 3.12+ and [UV](https://github.com/astral-sh/uv) as package manager <br>
 
 ## Run the GUI
 `python -m src.gui` <br>
+example of evolutionaly related sequences to use: <br>
+ATGCGTAGCTAGCTAGCTAG<br>
+ATGCGTAGCTAGCTAGCTAG<br>
+ATGCGTAGCTAGCTAGCAGG<br>
+ATGCGTAGCTAGCTAGCCAG<br>
+
+example of evolutionaly unrelated sequences to use: <br>
+GATTACAGATTACAGATTAG<br>
+CCGGAATTCGGCCGAAATTC<br>
+TACGTCAGCTACGTAGCTGA<br>
+TGCATGCTAGCTACGATCG<br>
 
 ## Run the CLI
 input as argument -> `python src/cli.py --input "ACGT AGCT GTAC"` <br>
