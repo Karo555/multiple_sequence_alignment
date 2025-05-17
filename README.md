@@ -26,13 +26,14 @@ Python 3.12+ and [UV](https://github.com/astral-sh/uv) as package manager <br>
 
 ## Run the GUI
 `python -m src.gui` <br>
-example of evolutionaly related sequences to use: <br>
+<br>
+--> example of evolutionaly related sequences to use: <br>
 ATGCGTAGCTAGCTAGCTAG<br>
 ATGCGTAGCTAGCTAGCTAG<br>
 ATGCGTAGCTAGCTAGCAGG<br>
 ATGCGTAGCTAGCTAGCCAG<br>
 
-example of evolutionaly unrelated sequences to use: <br>
+--> example of evolutionaly unrelated sequences to use: <br>
 GATTACAGATTACAGATTAG<br>
 CCGGAATTCGGCCGAAATTC<br>
 TACGTCAGCTACGTAGCTGA<br>
@@ -41,6 +42,9 @@ TGCATGCTAGCTACGATCG<br>
 ## Run the CLI
 input as argument -> `python src/cli.py --input "ACGT AGCT GTAC"` <br>
 path to input data -> `python src/cli.py --file path/to/sequences.fasta` <br>
+
+path to example data stored in the /data directory <br>
+--> data/multiple_sequences_dna.fasta
 
 configurable arguments:
 - `--input` – space-separated sequences, e.g. `"ACGT AGCT GTAC"`
