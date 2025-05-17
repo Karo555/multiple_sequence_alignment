@@ -7,6 +7,40 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from utils.functions import *
 from aligner.models import Sequence
 
+def draw_alignment_blocks(final_msa, seq_objects):
+    alignment_canvas.delete("all")
+    cell_width = 20
+    cell_height = 20
+    padding = 10
+
+    colors = {
+        "match": "#c8e6c9",
+        "mismatch": "#ffcdd2",
+        "gap": "#e0e0e0"
+    }
+
+    for row_idx, aligned_seq in enumerate(final_msa):
+        y = row_idx * cell_height + padding
+        alignment_canvas.create_text(5, y + cell_height // 2, text=seq_objects[row_idx].id, anchor="w", font=("Courier", 10, "bold"))
+
+        for col_idx, char in enumerate(aligned_seq):
+            column = [seq[col_idx] for seq in final_msa]
+            if all(c == '-' for c in column):
+                color = colors["gap"]
+            elif '-' in column:
+                color = colors["gap"]
+            elif all(c == column[0] for c in column):
+                color = colors["match"]
+            else:
+                color = colors["mismatch"]
+
+            x = 100 + col_idx * cell_width
+            alignment_canvas.create_rectangle(x, y, x + cell_width, y + cell_height, fill=color, outline="gray")
+            alignment_canvas.create_text(x + cell_width // 2, y + cell_height // 2, text=char, font=("Courier", 10))
+
+    canvas_width = max(800, 100 + len(final_msa[0]) * cell_width)
+    alignment_canvas.configure(scrollregion=(0, 0, canvas_width, len(final_msa) * cell_height + padding))
+
 def load_fasta_file():
     filepaths = filedialog.askopenfilenames(filetypes=[("FASTA files", "*.fasta *.fa"), ("All files", "*")])
     if not filepaths:
@@ -82,6 +116,9 @@ def run_alignment():
         for k, v in stats.items():
             result_text.insert(tk.END, f"{k.replace('_', ' ').capitalize()}: {v}\n")
 
+        # Draw graphical alignment block
+        draw_alignment_blocks(final_msa, seq_objects)
+
     except Exception as e:
         messagebox.showerror("Error", str(e))
 
@@ -131,7 +168,17 @@ ttk.Button(mainframe, text="RUN", command=run_alignment, style="Purple.TButton")
 result_text = tk.Text(mainframe, height=20, width=90)
 result_text.grid(row=7, column=0, columnspan=3, pady=10)
 
+# Graphical block alignment display pane
+canvas_frame = ttk.Frame(mainframe)
+canvas_frame.grid(row=8, column=0, columnspan=3, sticky="NSEW", pady=(10, 0))
+
+alignment_canvas = tk.Canvas(canvas_frame, width=780, height=200, bg="white")
+alignment_canvas.pack(side="left", fill="both", expand=True)
+
+canvas_scroll = ttk.Scrollbar(canvas_frame, orient="horizontal", command=alignment_canvas.xview)
+
+
 #output file button
-ttk.Button(mainframe, text="Save Output", command=save_output_to_file, style="Purple.TButton").grid(row=8, column=0, sticky="E")
+ttk.Button(mainframe, text="Save Output", command=save_output_to_file, style="Purple.TButton").grid(row=9, column=0, sticky="E")
 
 root.mainloop()
